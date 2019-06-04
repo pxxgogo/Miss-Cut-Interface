@@ -9,7 +9,7 @@ class TextFile(models.Model):
     request_type = models.IntegerField(default=0)
     ip = models.CharField(max_length=30)
     model_type = models.IntegerField(default=0)
-    tmp_code = models.CharField(blank=True, null=True)
+    tmp_code = models.CharField(blank=True, null=True, max_length=512)
     ret = models.FileField(upload_to="results", blank=True, null=True)
 
     def __str__(self):

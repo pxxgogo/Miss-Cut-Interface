@@ -4,8 +4,8 @@ from kombu import Exchange
 result_serializer = 'json'
 
 
-broker_url = "amqp://misscut:misscut@166.111.226.247:5672"
-result_backend = "amqp://misscut:misscut@166.111.226.247:5672"
+broker_url = "amqp://misscut:misscut@166.111.226.247:5672/mc_vhost"
+result_backend = "amqp://misscut:misscut@166.111.226.247:5672/mc_vhost"
 
 task_queues = (
     Queue('MC_lm',  exchange=Exchange('priority', type='direct'), routing_key='MC_lm'),
@@ -13,8 +13,8 @@ task_queues = (
 )
 
 task_routes = ([
-    ('tasks.check_with_lm', {'queue': 'MC_lm'}),
-    ('tasks.check_text_dep_1', {'queue': 'MC_dep'}),
-    ('tasks.check_text_dep_2', {'queue': 'MC_dep'}),
-    ('tasks.check_text_dep_full', {'queue': 'MC_dep'}),
+    ('kernel_lm_interface.check_text_lm', {'queue': 'MC_lm'}),
+    ('kernel_dep_interface.check_text_dep_1', {'queue': 'MC_dep'}),
+    ('kernel_dep_interface.check_text_dep_2', {'queue': 'MC_dep'}),
+    ('kernel_dep_interface.check_text_dep_full', {'queue': 'MC_dep'}),
 ],)

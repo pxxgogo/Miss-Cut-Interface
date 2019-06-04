@@ -1,7 +1,7 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from tasks import check_lm_op
+from kernel_lm_interface import check_text_lm
 from text.models import TextFile
 from django.core.files.base import ContentFile
 from django.utils.timezone import now
@@ -18,7 +18,7 @@ def submit_text(request):
         text = request.POST["text"]
         if text == "":
             return JsonResponse([], safe=False)
-        r = check_lm_op.delay(text)
+        r = check_text_lm.delay(text)
         # print(r.ready())
         while (not r.ready()):
             continue
@@ -38,10 +38,11 @@ def submit_text(request):
 def check_lm_api(request):
     if request.method == "POST":
         text = request.POST["text"]
+        print(text)
         if text == "":
             return JsonResponse([], safe=False)
-        r = check_lm_op.delay(text)
-        # print(r.ready())
+        r = check_text_lm.delay(text)
+        print(r.ready())
         while (not r.ready()):
             continue
         text_file = TextFile()

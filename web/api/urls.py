@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path
 from api import api_lm
 from api import api_dep
@@ -23,5 +22,4 @@ urlpatterns = [
     path('check_with_dep_1', api_dep.check_text_1_api),
     path('check_with_dep_2', api_dep.check_text_2_api),
     path('check_with_dep_full', api_dep.check_text_full_info)
-
 ]

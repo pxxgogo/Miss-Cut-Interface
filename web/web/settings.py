@@ -118,5 +118,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-
 STATIC_URL = '/static/'
+
+
+import sys
+sys.path.append("/home/misscut/app/MissCut-V7/system")
+sys.path.append("/home/misscut/app/Miss-Cut-V5/mc_algorithm_v5")
+

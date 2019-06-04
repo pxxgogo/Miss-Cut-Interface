@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from tasks import check_text_dep_1, check_text_dep_2, check_text_dep_full
+from kernel_dep_interface import check_text_dep_1, check_text_dep_2, check_text_dep_full
 import json
 import time
 from text.models import TextFile
