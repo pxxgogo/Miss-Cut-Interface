@@ -21,5 +21,6 @@ urlpatterns = [
     path('check_with_lm', api_lm.check_lm_api),
     path('check_with_dep_1', api_dep.check_text_1_api),
     path('check_with_dep_2', api_dep.check_text_2_api),
-    path('check_with_dep_full', api_dep.check_text_full_info)
+    path('check_with_dep_full', api_dep.check_text_full_info),
+    path('check_for_swn', api_lm.check_for_swn),
 ]

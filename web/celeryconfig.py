@@ -14,6 +14,7 @@ task_queues = (
 
 task_routes = ([
     ('kernel_lm_interface.check_text_lm', {'queue': 'MC_lm'}),
+    ('kernel_lm_interface.check_text_lm_for_swn', {'queue': 'MC_lm'}),
     ('kernel_dep_interface.check_text_dep_1', {'queue': 'MC_dep'}),
     ('kernel_dep_interface.check_text_dep_2', {'queue': 'MC_dep'}),
     ('kernel_dep_interface.check_text_dep_full', {'queue': 'MC_dep'}),

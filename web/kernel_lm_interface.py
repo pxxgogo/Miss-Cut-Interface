@@ -27,3 +27,14 @@ def check_text_lm(text):
     check_lm_op.reset()  # MUST call it before every check operation
     result = check_lm_op.feed_text(text)
     return json.dumps(result)
+
+
+@app.task(base=CallbackTask, autoretry_for=(Exception,), retry_kwargs={'max_retries': 5, 'countdown': 20})
+def check_text_lm_for_swn(text):
+    global check_lm_op
+    if check_lm_op is None:
+        from CheckOp import CheckOp
+        check_lm_op = CheckOp()
+    check_lm_op.reset()  # MUST call it before every check operation
+    result = check_lm_op.feed_text_for_swn(text)
+    return json.dumps(result)
