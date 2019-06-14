@@ -6,11 +6,9 @@ from text.models import TextFile
 
 import sys
 
-sys.path.append("/home/pxxgogo/misscut/app/Miss-Cut-Interface/web/kernel")
 
-from kernel_utils import preprocess, collect_result_lm, collect_result_dep
-from kernel_lm_interface import check_text_lm
-from kernel_dep_interface import check_text_dep_full
+from kernel.tasks import preprocess, collect_result_lm, collect_result_dep
+from api.tasks import check_text_lm, check_text_dep_full
 from celery import group
 
 
@@ -22,7 +20,6 @@ def tmp_index(request):
 def submit_files(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
-        print(email)
         profile = Profile()
         profile.email = email
         profile.files_num = len(request.FILES.getlist('files'))
@@ -35,6 +32,8 @@ def submit_files(request):
         # op_group = group([check_text_lm.s().set(queue="MC_lm"), check_text_dep_full.s().set(queue="MC_dep")])
 
         for file in request.FILES.getlist('files'):
+            if not file.name.endswith(".tex") and not file.name.endswith(".txt"):
+                continue
             text_file_lm = TextFile()
             text_file_lm.file_name = file.name
             text_file_lm.file = file
@@ -60,10 +59,10 @@ def submit_files(request):
             op_dep = (op1 | op3)
             ops_lm.append(op_lm)
             ops_dep.append(op_dep)
-        ops_lm_op = (group(ops_lm) | collect_result_lm.s(profile.id, text_models_lm).set(queue="MC_util"))
-        # ops_dep_op = (group(ops_dep) | collect_result_dep.s(profile.id, text_models_dep).set(queue="MC_util"))
+        ops_lm_op = (group(ops_lm) | collect_result_lm.s(email, text_models_lm).set(queue="MC_util"))
+        ops_dep_op = (group(ops_dep) | collect_result_dep.s(email, text_models_dep).set(queue="MC_util"))
         ops_lm_op.delay()
-        # ops_dep_op.delay()
+        ops_dep_op.delay()
 
         # print(profile.rawfile_set.all())
 

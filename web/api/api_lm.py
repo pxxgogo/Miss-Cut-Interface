@@ -1,11 +1,10 @@
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from kernel_lm_interface import check_text_lm, check_text_lm_for_swn
+from api.tasks import check_text_lm, check_text_lm_for_swn
 from text.models import TextFile
 from django.core.files.base import ContentFile
 from django.utils.timezone import now
-from api.result_generation import generate_lm_result
 
 
 def submit_text_test(request):

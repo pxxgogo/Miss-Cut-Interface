@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
-from kernel_dep_interface import check_text_dep_1, check_text_dep_2, check_text_dep_full
+from api.tasks import check_text_dep_1, check_text_dep_2, check_text_dep_full
 import json
 import time
 from text.models import TextFile
@@ -9,10 +9,7 @@ from django.utils.timezone import now
 from django.core.files.base import ContentFile
 
 
-
 # Create your views here.
-check_op = None
-
 log_handle = open("log_CNKI.txt", 'w+')
 
 

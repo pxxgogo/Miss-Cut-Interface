@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'api',
     'text',
     'user_profile',
+    'kernel'
 ]
 
 MIDDLEWARE = [
@@ -119,32 +120,46 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/var/www/static/',
 ]
-#
-# from kombu import Queue
-# from kombu import Exchange
-#
-# CELERY_TIMEZONE = TIME_ZONE
-# CELERY_ACCEPT_CONTENT = ['json', 'pickle']
-#
-# # celery queues setup
-# CELERY_DEFAULT_QUEUE = 'default'
-# CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
-# CELERY_DEFAULT_ROUTING_KEY = 'default'
-#
-# CELERY_QUEUES = (
-#     Queue('MC_lm', exchange=Exchange('priority', type='direct'), routing_key='MC_lm'),
-#     Queue('MC_dep', exchange=Exchange('priority', type='direct'), routing_key='MC_dep'),
-#     Queue('MC_util', exchange=Exchange('priority', type='direct'), routing_key='MC_util'),
-#
-# )
-#
-# CELERY_ROUTES = ([
-#                      ('kernel_lm_interface.check_text_lm', {'queue': 'MC_lm'}),
-#                      ('kernel_lm_interface.check_text_lm_for_swn', {'queue': 'MC_lm'}),
-#                      ('kernel_dep_interface.check_text_dep_1', {'queue': 'MC_dep'}),
-#                      ('kernel_dep_interface.check_text_dep_2', {'queue': 'MC_dep'}),
-#                      ('kernel_dep_interface.check_text_dep_full', {'queue': 'MC_dep'}),
-#                      ('kernel_utils.preprocess', {'queue': 'MC_util'}),
-#                      ('kernel_utils.collect_result_lm', {'queue': 'MC_util'}),
-#                      ('kernel_utils.collect_result_dep', {'queue': 'MC_util'}),
-#                  ],)
+
+from kombu import Queue
+from kombu import Exchange
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+
+# celery queues setup
+CELERY_DEFAULT_QUEUE = 'default'
+CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+CELERY_DEFAULT_ROUTING_KEY = 'default'
+
+CELERY_QUEUES = (
+    Queue('default', Exchange('default'), routing_key='default'),
+    Queue('MC_lm', exchange=Exchange('priority', type='direct'), routing_key='MC_lm'),
+    Queue('MC_dep', exchange=Exchange('priority', type='direct'), routing_key='MC_dep'),
+    Queue('MC_util', exchange=Exchange('priority', type='direct'), routing_key='MC_util'),
+
+)
+
+CELERY_BROKER_URL = 'amqp://misscut:misscut@166.111.226.247:5672/mc_vhost'  # Broker配置
+
+CELERY_RESULT_BACKEND = "amqp://misscut:misscut@166.111.226.247:5672/mc_vhost"  # BACKEND配置
+
+CELERY_ROUTES = ([
+                     ('check_text_lm', {'queue': 'MC_lm', 'routing_key': 'MC_lm'}),
+                     ('check_text_lm_for_swn', {'queue': 'MC_lm', 'routing_key': 'MC_lm'}),
+                     ('check_text_dep_1', {'queue': 'MC_dep', 'routing_key': 'MC_dep'}),
+                     ('check_text_dep_2', {'queue': 'MC_dep', 'routing_key': 'MC_dep'}),
+                     ('check_text_dep_full', {'queue': 'MC_dep', 'routing_key': 'MC_dep'}),
+                     ('preprocess', {'queue': 'MC_util', 'routing_key': 'MC_util'}),
+                     ('collect_result_lm', {'queue': 'MC_util', 'routing_key': 'MC_util'}),
+                     ('collect_result_dep', {'queue': 'MC_util', 'routing_key': 'MC_util'}),
+                 ],)
+
+# email
+
+EMAIL_HOST = 'mails.tsinghua.edu.cn'  # 邮件服务器地址
+EMAIL_PORT = 465  # 端口号25 or 465
+EMAIL_HOST_USER = 'pxy18@mails.tsinghua.edu.cn'  # 用户名
+EMAIL_HOST_PASSWORD = '05101314pW'  # 邮箱密码或授权码
+EMAIL_USE_TLS = True  # 默认
+EMAIL_FROM = 'pxy18@mails.tsinghua.edu.cn'  # 发送人
