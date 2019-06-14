@@ -78,3 +78,5 @@ def check_for_swn(request):
     return JsonResponse({"return_code": 1}, safe=False)
 
 
+
+

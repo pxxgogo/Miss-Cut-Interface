@@ -3,7 +3,7 @@ import celery
 import json
 
 
-app = celery.Celery('lm_task')
+app = celery.Celery('MC_lm')
 app.config_from_object('celeryconfig')
 
 check_lm_op = None

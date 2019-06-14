@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Xingyu Pan">
+
+    <title>MissCut Test</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="/static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Custom styles for this template-->
+    <link href="/static/css/sb-admin.css" rel="stylesheet">
+    <link href="/static/css/tmp.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-dark">
+
+<div class="container">
+    <div class="card card-login mx-auto mt-5">
+        <div class="card-header">请上传您的论文</div>
+        <div class="card-body">
+            <form enctype="multipart/form-data" action="/submit_files" method="post">
+                <div class="form-group text-center">
+                    <div>请在下侧表单中提交您的论文。目前我们仅接收<span style="color: red; font-weight: bolder">.tex</span> 和 <span
+                            style="color: red; font-weight: bolder">.txt</span>格式的文件，可上传多个文件。当查错完成后，我们会将结果发到您在下方所留的邮箱。谢谢配合！
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input class="btn btn-primary btn-block" type="submit" value="提交">
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-group">
+                        <input type="email" id="inputEmail" class="form-control" placeholder="邮箱地址"
+                               required="required" autofocus="autofocus" name="email">
+                        <label for="inputEmail">邮箱地址</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-file form-label-group">
+                        <input type="file" class="form-control custom-file-input" id="customFile" multiple name="files">
+                        <label class="custom-file-label" for="customFile">请选择您的论文文件。
+                        </label>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<script src="/static/vendor/jquery/jquery.min.js"></script>
+<script src="/static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/bs-custom-file-input.min.js"></script>
+<script src="/static/js/tmp.js"></script>
+
+<!--&lt;!&ndash; Core plugin JavaScript&ndash;&gt;-->
+<script src="/static/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+</body>
+
+</html>

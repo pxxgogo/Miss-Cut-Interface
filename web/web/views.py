@@ -1,65 +1,70 @@
 from django.shortcuts import render
-from django.template import RequestContext
 from django.http import HttpResponseRedirect
-from django.contrib import auth
-from django.contrib.auth.models import User
-from django.template.context_processors import csrf
+from django.views.decorators.csrf import csrf_exempt
+from user_profile.models import Profile
+from text.models import TextFile
+
+import sys
+
+sys.path.append("/home/pxxgogo/misscut/app/Miss-Cut-Interface/web/kernel")
+
+from kernel_utils import preprocess, collect_result_lm, collect_result_dep
+from kernel_lm_interface import check_text_lm
+from kernel_dep_interface import check_text_dep_full
+from celery import group
 
 
-def index(request):
-    if not request.user.username:
-        return HttpResponseRedirect("/login")
-    return render(request, "index.html",
-                  {'pageName': "首页",
-                   'homeClass': 'selected'})
+def tmp_index(request):
+    return render(request, "tmp.html")
 
 
-def login(request):
-    if request.user.is_active:
-        return HttpResponseRedirect("/")
-    error = ""
+@csrf_exempt
+def submit_files(request):
     if request.method == 'POST':
-        username = request.POST.get('username', '')
-        password = request.POST.get('password', '')
-        user = auth.authenticate(username=username, password=password)
-        if user is not None and user.is_active:
-            # Correct password, and the user is marked "active"
-            auth.login(request, user)
-            # Redirect to a success page.
-            return HttpResponseRedirect("/")
-        else:
-            error = "登陆失败"
-    pageTree = [{'url': "/login", 'name': "登陆页"}]
-    return render(request, "login.html",
-                  {'error': error,
-                   'pageName': "请登陆", 'pageTree': pageTree})
+        email = request.POST.get('email', '')
+        print(email)
+        profile = Profile()
+        profile.email = email
+        profile.files_num = len(request.FILES.getlist('files'))
+        profile.finished_num = 0
+        profile.save()
+        ops_lm = []
+        ops_dep = []
+        text_models_lm = []
+        text_models_dep = []
+        # op_group = group([check_text_lm.s().set(queue="MC_lm"), check_text_dep_full.s().set(queue="MC_dep")])
 
+        for file in request.FILES.getlist('files'):
+            text_file_lm = TextFile()
+            text_file_lm.file_name = file.name
+            text_file_lm.file = file
+            text_file_lm.profile = profile
+            text_file_lm.ip = request.META.get("REMOTE_ADDR", "unknown")
+            text_file_lm.model_type = 0
+            text_file_lm.save()
+            text_models_lm.append(text_file_lm.id)
 
-def register(request):
-    error = ""
-    # if request.method == 'POST':
-    #     user = User()
-    #     user.username = request.POST["username"]
-    #     user.email = request.POST["email"]
-    #     user.phone = request.POST["phone"]
-    #
-    #     if request.POST["gender"] == "M":
-    #         user.gender = "男"
-    #     else:
-    #         user.gender = "女"
-    #     user.password = make_password(request.POST["password"], None, 'pbkdf2_sha256')
-    #     user.studentID = request.POST["studentID"]
-    #     user.personID = "#"
-    #     if form.is_valid():
-    #         form.save(user)
-    #         return HttpResponseRedirect("/login")
-    #     else:
-    #         # assert False
-    #         error = "信息错误！"
-    c = {}
-    c.update(csrf(request))
-    c['error'] = error
-    pageTree = [{'url': "/register", 'name': "注册页"}]
-    c['pageTree'] = pageTree
-    c['pageName'] = "请注册"
-    return render(request, "register.html", c)
+            text_file_dep = TextFile()
+            text_file_dep.file_name = file.name
+            text_file_dep.file = text_file_lm.file
+            text_file_dep.profile = profile
+            text_file_dep.ip = request.META.get("REMOTE_ADDR", "unknown")
+            text_file_dep.model_type = 1
+            text_file_dep.save()
+            text_models_dep.append(text_file_dep.id)
+
+            op1 = preprocess.s(text_file_lm.file.path).set(queue="MC_util")
+            op2 = check_text_lm.s().set(queue="MC_lm")
+            op3 = check_text_dep_full.s({}, 0).set(queue="MC_dep")
+            op_lm = (op1 | op2)
+            op_dep = (op1 | op3)
+            ops_lm.append(op_lm)
+            ops_dep.append(op_dep)
+        ops_lm_op = (group(ops_lm) | collect_result_lm.s(profile.id, text_models_lm).set(queue="MC_util"))
+        # ops_dep_op = (group(ops_dep) | collect_result_dep.s(profile.id, text_models_dep).set(queue="MC_util"))
+        ops_lm_op.delay()
+        # ops_dep_op.delay()
+
+        # print(profile.rawfile_set.all())
+
+    return HttpResponseRedirect("/")

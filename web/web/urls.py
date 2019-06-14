@@ -16,13 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
-from web.views import index, login, register
+from web.views import tmp_index, submit_files
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include("api.urls")),
-    path('login/', login),
-    path('', index),
-    path('index/', index),
-    path('register/', register)
+    path('', tmp_index),
+    path('index/', tmp_index),
+    path('submit_files', submit_files),
 ]

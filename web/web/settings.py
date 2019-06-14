@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = '$nt5%lgb0t!@kcs&(wa!1##7&t_&-$_czg!z%-xdygbb8jl=82'
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
 
 # Application definition
 
@@ -72,7 +70,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'web.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -82,7 +79,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -102,7 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -116,7 +111,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_URL = '/static/'
@@ -125,8 +119,32 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
     '/var/www/static/',
 ]
-
-import sys
-sys.path.append("/home/misscut/app/MissCut-V7/system")
-sys.path.append("/home/misscut/app/Miss-Cut-V5/mc_algorithm_v5")
-
+#
+# from kombu import Queue
+# from kombu import Exchange
+#
+# CELERY_TIMEZONE = TIME_ZONE
+# CELERY_ACCEPT_CONTENT = ['json', 'pickle']
+#
+# # celery queues setup
+# CELERY_DEFAULT_QUEUE = 'default'
+# CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+# CELERY_DEFAULT_ROUTING_KEY = 'default'
+#
+# CELERY_QUEUES = (
+#     Queue('MC_lm', exchange=Exchange('priority', type='direct'), routing_key='MC_lm'),
+#     Queue('MC_dep', exchange=Exchange('priority', type='direct'), routing_key='MC_dep'),
+#     Queue('MC_util', exchange=Exchange('priority', type='direct'), routing_key='MC_util'),
+#
+# )
+#
+# CELERY_ROUTES = ([
+#                      ('kernel_lm_interface.check_text_lm', {'queue': 'MC_lm'}),
+#                      ('kernel_lm_interface.check_text_lm_for_swn', {'queue': 'MC_lm'}),
+#                      ('kernel_dep_interface.check_text_dep_1', {'queue': 'MC_dep'}),
+#                      ('kernel_dep_interface.check_text_dep_2', {'queue': 'MC_dep'}),
+#                      ('kernel_dep_interface.check_text_dep_full', {'queue': 'MC_dep'}),
+#                      ('kernel_utils.preprocess', {'queue': 'MC_util'}),
+#                      ('kernel_utils.collect_result_lm', {'queue': 'MC_util'}),
+#                      ('kernel_utils.collect_result_dep', {'queue': 'MC_util'}),
+#                  ],)

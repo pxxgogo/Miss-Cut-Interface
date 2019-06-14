@@ -2,8 +2,7 @@
 import celery
 import json
 
-
-app = celery.Celery('dep_tasks')
+app = celery.Celery('MC_dep')
 app.config_from_object('celeryconfig')
 
 check_lm_op = None
