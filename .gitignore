@@ -8,3 +8,5 @@ __pycache__/*
 web/text_files/*
 web/results/*
 web/return_files/*
+**/migrations/*
+web/db.sqlite3
