@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.urls import include
-from web.views import tmp_index, submit_files
+from web.views import tmp_index, submit_files, test_email
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('', tmp_index),
     path('index/', tmp_index),
     path('submit_files', submit_files),
+    path('test_email', test_email)
 ]

@@ -3,6 +3,8 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from user_profile.models import Profile
 from text.models import TextFile
+from django.core.mail import EmailMessage
+
 
 import sys
 
@@ -66,4 +68,15 @@ def submit_files(request):
 
         # print(profile.rawfile_set.all())
 
+    return HttpResponseRedirect("/")
+
+
+def test_email(request):
+    email_message = EmailMessage(
+        '查错结果（精细查错）',
+        '附件是精细模型的查错结果，请验收。',
+        'pxy18@mails.tsinghua.edu.cn',
+        ['421915293@163.com'],
+    )
+    email_message.send()
     return HttpResponseRedirect("/")
