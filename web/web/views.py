@@ -68,7 +68,7 @@ def submit_files(request):
 
         # print(profile.rawfile_set.all())
 
-    return HttpResponseRedirect("/")
+    return render(request, "finish.html")
 
 
 def test_email(request):
@@ -81,3 +81,8 @@ def test_email(request):
     email_message.attach("test.txt", "1234123")
     email_message.send()
     return HttpResponseRedirect("/")
+
+
+def finish_submitting(request):
+    return render(request, "finish.html")
+
