@@ -30,19 +30,35 @@ def generate_lm_result(ret_list):
 
 
 def generate_dep_result(ret_list):
-    ret_text = ""
+    ret_text_list = []
     for ret in ret_list:
         sentence = ret['text']
         mistakes = ret['mistakes']
+        choose_flag = False
+        label_flag = 0
         possible_mistakes_text = ""
         for mistakes_per_type in mistakes:
-            # if mistakes_per_type['type'] == 'special symbol check':
-            #     continue
-            possible_mistakes_text += " %s: " % mistakes_per_type['type']
-            for mistake_info in mistakes_per_type['mistakes']:
-                possible_mistakes_text += "%s(%d) " % (
-                    mistake_info[0][0], mistake_info[0][1])
-        ret_text += "%s     POSSIBLE WORDS: %s\n" % (sentence, possible_mistakes_text)
+            if mistakes_per_type['type'] == 'special symbol check':
+                continue
+            if mistakes_per_type['type'] != 'triples analysis':
+                if mistakes_per_type['type'] == "lowly frequent token":
+                    if label_flag < 1:
+                        label_flag = 1
+                else:
+                    label_flag = 2
+                possible_mistakes_text += " %s: " % mistakes_per_type['type']
+                for mistake_info in mistakes_per_type['mistakes']:
+                    possible_mistakes_text += "%s(%d) " % (
+                        mistake_info[0][0], mistake_info[0][1])
+
+            choose_flag = True
+        if choose_flag:
+            if label_flag > 0:
+                ret_text_list.append(("%s     POSSIBLE ERROR: %s\n" % (sentence, possible_mistakes_text), label_flag))
+            else:
+                ret_text_list.append(("%s\n" % sentence, label_flag))
+    ret_text_list.sort(key=lambda x: -x[1])
+    ret_text = "".join([text for text, label in ret_text_list])
     return ret_text
 
 
@@ -52,7 +68,7 @@ def preprocess(file_path):
                            file_path],
                           stdout=subprocess.PIPE, stderr=None)
     text = su.stdout.read().decode()
-    text = text.replace("\n", "")
+    # text = text.replace("\n", "")
     print("parsed text length: ", len(text))
     return text
 
@@ -83,8 +99,8 @@ def collect_result_lm(rets_list, email, text_model_ids):
 @shared_task(name="collect_result_dep", base=CallbackTask)
 def collect_result_dep(rets_list, email, text_model_ids):
     email_message = EmailMessage(
-        '查错结果（精细查错）',
-        '附件是精细模型的查错结果，请验收。',
+        '查错结果',
+        '附件是您所有文件的查错结果，请验收。在文件中每一行表示一处可疑错误。未包含POSSIBLE ERROR的语句表明其中存在语病或错别字。',
         'pxy18@mails.tsinghua.edu.cn',
         [email],
     )

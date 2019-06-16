@@ -61,9 +61,9 @@ def submit_files(request):
             op_dep = (op1 | op3)
             ops_lm.append(op_lm)
             ops_dep.append(op_dep)
-        ops_lm_op = (group(ops_lm) | collect_result_lm.s(email, text_models_lm).set(queue="MC_util"))
+        # ops_lm_op = (group(ops_lm) | collect_result_lm.s(email, text_models_lm).set(queue="MC_util"))
         ops_dep_op = (group(ops_dep) | collect_result_dep.s(email, text_models_dep).set(queue="MC_util"))
-        ops_lm_op.delay()
+        # ops_lm_op.delay()
         ops_dep_op.delay()
 
         # print(profile.rawfile_set.all())
@@ -78,5 +78,6 @@ def test_email(request):
         'pxy18@mails.tsinghua.edu.cn',
         ['421915293@163.com'],
     )
+    email_message.attach("test.txt", "1234123")
     email_message.send()
     return HttpResponseRedirect("/")

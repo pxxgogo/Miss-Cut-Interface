@@ -161,5 +161,5 @@ EMAIL_HOST = 'mails.tsinghua.edu.cn'  # 邮件服务器地址
 EMAIL_PORT = 465  # 端口号25 or 465
 EMAIL_HOST_USER = 'pxy18@mails.tsinghua.edu.cn'  # 用户名
 EMAIL_HOST_PASSWORD = '05101314pW'  # 邮箱密码或授权码
-EMAIL_USE_TLS = True  # 默认
+EMAIL_USE_SSL = True
 EMAIL_FROM = 'pxy18@mails.tsinghua.edu.cn'  # 发送人
