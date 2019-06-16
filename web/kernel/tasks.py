@@ -54,17 +54,17 @@ def generate_dep_result(ret_list):
             choose_flag = True
         if choose_flag:
             if label_flag > 0:
-                ret_text_list.append(("%s     POSSIBLE ERROR: %s\n" % (sentence, possible_mistakes_text), label_flag))
+                ret_text_list.append(("%s     Possible Errors: %s" % (sentence, possible_mistakes_text), label_flag))
             else:
-                ret_text_list.append(("%s\n" % sentence, label_flag))
+                ret_text_list.append(("%s     Expression Irregularity" % sentence, label_flag))
     ret_text_list.sort(key=lambda x: -x[1])
-    ret_text = "".join([text for text, label in ret_text_list])
+    ret_text = "".join(["%d. %s\n" % (No, ret_info[0]) for No, ret_info in zip(range(len(ret_text_list)), ret_text_list)])
     return ret_text
 
 
 @shared_task(name="preprocess", base=CallbackTask)
 def preprocess(file_path):
-    su = subprocess.Popen(['/home/pxxgogo/misscut/app/Miss-Cut-Interface/web/kernel/delatex',
+    su = subprocess.Popen(['/home/misscut/app/Miss-Cut-Interface/web/kernel/delatex',
                            file_path],
                           stdout=subprocess.PIPE, stderr=None)
     text = su.stdout.read().decode()
