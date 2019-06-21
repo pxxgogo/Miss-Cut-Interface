@@ -4,10 +4,12 @@ import json
 from django.utils.timezone import now
 from django.core.files.base import ContentFile
 from text.models import TextFile
+from user_profile.models import Profile
 from django.core.mail import EmailMessage
 
 import subprocess
-
+import time
+import chardet
 
 class CallbackTask(celery.Task):
     def on_success(self, retval, task_id, args, kwargs):
@@ -64,11 +66,14 @@ def generate_dep_result(ret_list):
 
 @shared_task(name="preprocess", base=CallbackTask)
 def preprocess(file_path):
-    su = subprocess.Popen(['/home/misscut/app/Miss-Cut-Interface/web/kernel/delatex',
+    su = subprocess.Popen(['/home/pxxgogo/misscut/app/Miss-Cut-Interface/web/kernel/delatex',
                            file_path],
                           stdout=subprocess.PIPE, stderr=None)
-    text = su.stdout.read().decode()
-    # text = text.replace("\n", "")
+    text_bytes = su.stdout.read()
+    encoding_result = chardet.detect(text_bytes)
+    text = text_bytes.decode(encoding_result['encoding'])
+    text = text.replace("\r", "\n")
+    text = text.replace("\t", "")
     print("parsed text length: ", len(text))
     return text
 
@@ -97,7 +102,11 @@ def collect_result_lm(rets_list, email, text_model_ids):
 
 
 @shared_task(name="collect_result_dep", base=CallbackTask)
-def collect_result_dep(rets_list, email, text_model_ids):
+def collect_result_dep(rets_list, profile_id, text_model_ids):
+    profile = Profile.objects.get(id=profile_id)
+    profile.finished_check_num = len(rets_list)
+    profile.save()
+    email = profile.email
     email_message = EmailMessage(
         '查错结果',
         '附件是您所有文件的查错结果，请验收。在文件中每一行表示一处可疑错误。未包含POSSIBLE ERROR的语句表明其中存在语病或错别字。',
@@ -116,4 +125,15 @@ def collect_result_dep(rets_list, email, text_model_ids):
             ContentFile(ret_text))
         text_model.save()
         email_message.attach(text_model.file_name[:-4] + "_ret.txt", ret_text)
-    email_message.send()
+    send_num = 0
+    while send_num < 5:
+        try:
+            email_message.send()
+            break
+        except Exception as e:
+            print(e)
+            send_num += 1
+            time.sleep(5)
+    profile.finished_sending_flag = True
+    profile.save()
+

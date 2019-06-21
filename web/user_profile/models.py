@@ -10,4 +10,5 @@ from django.dispatch import receiver
 class Profile(models.Model):
     email = models.EmailField(blank=True, default=None)
     files_num = models.IntegerField(default=0)
-    finished_num = models.IntegerField(default=0)
+    finished_check_num = models.IntegerField(default=0)
+    finished_sending_flag = models.BooleanField(default=False)

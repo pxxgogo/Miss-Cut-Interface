@@ -36,33 +36,35 @@ def submit_files(request):
         for file in request.FILES.getlist('files'):
             if not file.name.endswith(".tex") and not file.name.endswith(".txt"):
                 continue
-            text_file_lm = TextFile()
-            text_file_lm.file_name = file.name
-            text_file_lm.file = file
-            text_file_lm.profile = profile
-            text_file_lm.ip = request.META.get("REMOTE_ADDR", "unknown")
-            text_file_lm.model_type = 0
-            text_file_lm.save()
-            text_models_lm.append(text_file_lm.id)
+            # text_file_lm = TextFile()
+            # text_file_lm.file_name = file.name
+            # text_file_lm.file = file
+            # text_file_lm.profile = profile
+            # text_file_lm.ip = request.META.get("REMOTE_ADDR", "unknown")
+            # text_file_lm.model_type = 0
+            # text_file_lm.save()
+            # text_models_lm.append(text_file_lm.id)
 
             text_file_dep = TextFile()
             text_file_dep.file_name = file.name
-            text_file_dep.file = text_file_lm.file
+            text_file_dep.file = file
             text_file_dep.profile = profile
             text_file_dep.ip = request.META.get("REMOTE_ADDR", "unknown")
             text_file_dep.model_type = 1
             text_file_dep.save()
             text_models_dep.append(text_file_dep.id)
 
-            op1 = preprocess.s(text_file_lm.file.path).set(queue="MC_util")
-            op2 = check_text_lm.s().set(queue="MC_lm")
+            op1 = preprocess.s(text_file_dep.file.path).set(queue="MC_util")
+            # op2 = check_text_lm.s().set(queue="MC_lm")
             op3 = check_text_dep_full.s({}, 0).set(queue="MC_dep")
-            op_lm = (op1 | op2)
+            # op_lm = (op1 | op2)
             op_dep = (op1 | op3)
-            ops_lm.append(op_lm)
+            # ops_lm.append(op_lm)
             ops_dep.append(op_dep)
+        if len(ops_dep) == 0:
+            return render(request, "finish.html")
         # ops_lm_op = (group(ops_lm) | collect_result_lm.s(email, text_models_lm).set(queue="MC_util"))
-        ops_dep_op = (group(ops_dep) | collect_result_dep.s(email, text_models_dep).set(queue="MC_util"))
+        ops_dep_op = (group(ops_dep) | collect_result_dep.s(profile.id, text_models_dep).set(queue="MC_util"))
         # ops_lm_op.delay()
         ops_dep_op.delay()
 
